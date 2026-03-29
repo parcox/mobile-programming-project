@@ -45,14 +45,16 @@ class DestinationCard extends StatelessWidget {
           child: Stack(
             children: [
               // Background image
-              // TODO B1: Replace the placeholder Container below with a
-              // CachedNetworkImage that fills the full 200x240 space.
-              // Use BoxFit.cover. Show a grey shimmer Container as placeholder.
-              Container(
+              SizedBox(
                 height: 240,
-                color: Colors.grey[300],
-                child: const Center(
-                  child: Icon(Icons.image, size: 48, color: Colors.grey),
+                width: double.infinity,
+                child: CachedNetworkImage(
+                  imageUrl: destination.imageUrl,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) =>
+                      Container(color: Colors.grey[300]),
+                  errorWidget: (context, url, error) =>
+                      const Icon(Icons.broken_image),
                 ),
               ),
 
@@ -80,14 +82,12 @@ class DestinationCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // TODO B2: Display destination.name in white bold text
-                    // fontSize: 16, fontWeight: FontWeight.bold
-                    // overflow: TextOverflow.ellipsis
+                    // TODO B1: Show destination.name as white bold Text
+                    // Text(destination.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16), overflow: TextOverflow.ellipsis)
                     const SizedBox(height: 4),
 
-                    // TODO B3: Display destination.country in white text
-                    // fontSize: 12, with a location pin icon (Icons.location_on)
-                    // Icon size: 12, color: Colors.white70
+                    // TODO B2: Show a Row with location icon and country name
+                    // Row(children: [Icon(Icons.location_on, size: 12, color: Colors.white70), SizedBox(width: 4), Text(destination.country, style: const TextStyle(color: Colors.white70, fontSize: 12))])
                     const SizedBox(height: 6),
 
                     // Rating bar (complete — no TODO)
@@ -108,7 +108,10 @@ class DestinationCard extends StatelessWidget {
                   top: 10,
                   right: 10,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.deepPurple,
                       borderRadius: BorderRadius.circular(12),
@@ -151,13 +154,15 @@ class DestinationCard extends StatelessWidget {
                 topLeft: Radius.circular(16),
                 bottomLeft: Radius.circular(16),
               ),
-              // TODO B4: Replace placeholder Container with CachedNetworkImage
-              // Size: width 110, height 110. BoxFit.cover.
-              child: Container(
+              child: CachedNetworkImage(
+                imageUrl: destination.imageUrl,
                 width: 110,
                 height: 110,
-                color: Colors.grey[300],
-                child: const Icon(Icons.image, color: Colors.grey),
+                fit: BoxFit.cover,
+                placeholder: (context, url) =>
+                    Container(width: 110, height: 110, color: Colors.grey[300]),
+                errorWidget: (context, url, error) =>
+                    const Icon(Icons.broken_image),
               ),
             ),
 
@@ -168,26 +173,24 @@ class DestinationCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // TODO B5: Display destination.name
-                    // Style: fontSize 15, fontWeight bold
-
+                    // TODO B3: Show destination.name as bold Text
+                    // Text(destination.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15))
                     const SizedBox(height: 4),
 
-                    // TODO B6: Row with location icon + destination.country
-                    // Icon: Icons.location_on, size 14, color deepPurple
-                    // Text: fontSize 13, color grey[600]
-
+                    // TODO B4: Show a Row with location icon and country
+                    // Row(children: [Icon(Icons.location_on, size: 14, color: Colors.deepPurple), SizedBox(width: 4), Text(destination.country, style: TextStyle(fontSize: 13, color: Colors.grey[600]))])
                     const SizedBox(height: 6),
 
-                    // TODO B7: Row with star icon + rating text
-                    // Icon: Icons.star, size 14, color amber
-                    // Text: '${destination.rating}', fontSize 13
-
+                    // TODO B5: Show a Row with star icon and rating
+                    // Row(children: [Icon(Icons.star, size: 14, color: Colors.amber), SizedBox(width: 4), Text('${destination.rating}', style: const TextStyle(fontSize: 13))])
                     const SizedBox(height: 6),
 
                     // Category chip (complete — no TODO)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.deepPurple.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
@@ -208,7 +211,11 @@ class DestinationCard extends StatelessWidget {
             // Arrow icon
             const Padding(
               padding: EdgeInsets.only(right: 12),
-              child: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+              child: Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: Colors.grey,
+              ),
             ),
           ],
         ),

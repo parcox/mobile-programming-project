@@ -10,32 +10,41 @@ import 'destination_detail_page.dart';
 class HomePage extends NyStatefulWidget<HomeController> {
   static RouteView path = ('/home', (_) => HomePage());
 
-  const HomePage({super.key}) : super(child: _HomePageState());
+  HomePage({super.key}) : super(child: () => _HomePageState());
 }
 
-class _HomePageState extends NyState<HomePage> {
+class _HomePageState extends NyPage<HomePage> {
   // These lists will hold destination data from the controller
   List<Destination> _featured = [];
   List<Destination> _allDestinations = [];
 
   // Currently selected category filter
   String _selectedCategory = 'All';
-  final List<String> _categories = ['All', 'Beach', 'Mountain', 'City', 'Diving', 'Adventure'];
+  final List<String> _categories = [
+    'All',
+    'Beach',
+    'Mountain',
+    'City',
+    'Diving',
+    'Adventure',
+  ];
 
   @override
   get init => () async {
     // Load data from the controller
-    _featured = controller.getOnlyFeatured();
-    _allDestinations = controller.getFeaturedDestinations();
+    _featured = widget.controller.getOnlyFeatured();
+    _allDestinations = widget.controller.getFeaturedDestinations();
   };
 
   // ─── TODO A1 ──────────────────────────────────────────────────────────────
-  // Implement _filterByCategory(String category)
-  // When called:
-  //   1. Update _selectedCategory to the given category
-  //   2. If category == 'All', set _allDestinations to all destinations
-  //   3. Otherwise, use controller.getByCategory(category)
-  //   4. Call setState() to rebuild the UI
+  // Complete this function so tapping a category chip filters the list.
+  // Hint:
+  //   setState(() {
+  //     _selectedCategory = category;
+  //     _allDestinations = category == 'All'
+  //         ? widget.controller.getFeaturedDestinations()
+  //         : widget.controller.getByCategory(category);
+  //   });
   // ─────────────────────────────────────────────────────────────────────────
   void _filterByCategory(String category) {
     // TODO A1: your code here
@@ -80,35 +89,70 @@ class _HomePageState extends NyState<HomePage> {
     );
   }
 
-  // ─── TODO A2 ──────────────────────────────────────────────────────────────
-  // Build the SliverAppBar with:
-  //   - expandedHeight: 220
-  //   - pinned: true
-  //   - A FlexibleSpaceBar with:
-  //       title: Text 'Hello Travel 🌍' in white, fontSize 18
-  //       background: a Stack with:
-  //         (a) CachedNetworkImage (or Image.network) filling the space
-  //             URL: 'https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1200'
-  //             BoxFit.cover
-  //         (b) A dark gradient overlay (Colors.black opacity 0.3 to transparent)
-  // ─────────────────────────────────────────────────────────────────────────
   Widget _buildSliverAppBar() {
-    // TODO A2: your code here
-    return const SliverToBoxAdapter(child: SizedBox.shrink());
+    return SliverAppBar(
+      expandedHeight: 220,
+      pinned: true,
+      flexibleSpace: FlexibleSpaceBar(
+        title: const Text(
+          'Hello Travel 🌍',
+          style: TextStyle(color: Colors.white, fontSize: 18),
+        ),
+        background: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.network(
+              'https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1200',
+              fit: BoxFit.cover,
+            ),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Colors.black.withOpacity(0.3), Colors.transparent],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
-  // ─── TODO A3 ──────────────────────────────────────────────────────────────
-  // Build the greeting section with:
-  //   - A Text: 'Good Morning! 👋' (or time-based greeting)
-  //     Style: fontSize 14, color grey[600]
-  //   - Below it, a RichText with:
-  //       'Discover '  (fontSize 26, bold, black)
-  //       'Your Next\nAdventure'  (fontSize 26, bold, deepPurple)
-  // Hint: use RichText with TextSpan children
-  // ─────────────────────────────────────────────────────────────────────────
   Widget _buildGreetingSection() {
-    // TODO A3: your code here
-    return const SizedBox.shrink();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Good Morning! 👋',
+          style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+        ),
+        const SizedBox(height: 4),
+        RichText(
+          text: const TextSpan(
+            children: [
+              TextSpan(
+                text: 'Discover ',
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              TextSpan(
+                text: 'Your Next\nAdventure',
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepPurple,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 
   // Search bar — complete, no TODO
@@ -150,50 +194,81 @@ class _HomePageState extends NyState<HomePage> {
     );
   }
 
-  // ─── TODO A4 ──────────────────────────────────────────────────────────────
-  // Build the horizontal featured destinations list:
-  //   - Use SizedBox height 260
-  //   - Inside: ListView.builder (scrollDirection: Axis.horizontal)
-  //   - itemCount: _featured.length
-  //   - Each item: DestinationCard(destination, onTap, isHorizontal: true)
-  //   - onTap should call: routeTo(DestinationDetailPage.path, data: destination)
-  // If _featured is empty, show a centered Text: 'No featured destinations'
-  // ─────────────────────────────────────────────────────────────────────────
   Widget _buildFeaturedList() {
-    // TODO A4: your code here
-    return const SizedBox(height: 260, child: Center(child: Text('TODO A4')));
+    if (_featured.isEmpty) {
+      return const SizedBox(
+        height: 260,
+        child: Center(child: Text('No featured destinations')),
+      );
+    }
+    return SizedBox(
+      height: 260,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: _featured.length,
+        itemBuilder: (context, index) {
+          final destination = _featured[index];
+          return DestinationCard(
+            destination: destination,
+            isHorizontal: true,
+            onTap: () => routeTo(DestinationDetailPage.path, data: destination),
+          );
+        },
+      ),
+    );
   }
 
-  // ─── TODO A5 ──────────────────────────────────────────────────────────────
-  // Build the horizontal category filter chips:
-  //   - Use SizedBox height 40
-  //   - Inside: ListView.builder (scrollDirection: Axis.horizontal)
-  //   - itemCount: _categories.length
-  //   - Each item: a GestureDetector wrapping a Container (chip-style)
-  //     - If _categories[i] == _selectedCategory:
-  //         background: deepPurple, text: white
-  //     - Else:
-  //         background: white, text: grey[700], border: grey[300]
-  //     - Padding: horizontal 16, vertical 8
-  //     - BorderRadius: 20
-  //     - onTap: call _filterByCategory(_categories[i])
-  // ─────────────────────────────────────────────────────────────────────────
   Widget _buildCategoryFilter() {
-    // TODO A5: your code here
-    return const SizedBox(height: 40, child: Center(child: Text('TODO A5')));
+    return SizedBox(
+      height: 40,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: _categories.length,
+        itemBuilder: (context, index) {
+          final category = _categories[index];
+          final isSelected = category == _selectedCategory;
+          return GestureDetector(
+            onTap: () => _filterByCategory(category),
+            child: Container(
+              margin: const EdgeInsets.only(right: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: isSelected ? Colors.deepPurple : Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: isSelected ? Colors.deepPurple : Colors.grey[300]!,
+                ),
+              ),
+              child: Text(
+                category,
+                style: TextStyle(
+                  color: isSelected ? Colors.white : Colors.grey[700],
+                  fontSize: 13,
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
-  // ─── TODO A6 ──────────────────────────────────────────────────────────────
-  // Build the vertical list of all destinations:
-  //   - Use ListView.builder with shrinkWrap: true
-  //     and physics: NeverScrollableScrollPhysics()
-  //   - itemCount: _allDestinations.length
-  //   - Each item: DestinationCard(destination, onTap, isHorizontal: false)
-  //   - onTap: routeTo(DestinationDetailPage.path, data: destination)
-  // If _allDestinations is empty, show centered Text: 'No destinations found'
-  // ─────────────────────────────────────────────────────────────────────────
   Widget _buildDestinationList() {
-    // TODO A6: your code here
-    return const Center(child: Text('TODO A6'));
+    if (_allDestinations.isEmpty) {
+      return const Center(child: Text('No destinations found'));
+    }
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: _allDestinations.length,
+      itemBuilder: (context, index) {
+        final destination = _allDestinations[index];
+        return DestinationCard(
+          destination: destination,
+          isHorizontal: false,
+          onTap: () => routeTo(DestinationDetailPage.path, data: destination),
+        );
+      },
+    );
   }
 }

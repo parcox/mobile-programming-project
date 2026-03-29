@@ -7,12 +7,16 @@ import 'package:nylo_framework/nylo_framework.dart';
 import '../../app/models/destination.dart';
 
 class DestinationDetailPage extends NyStatefulWidget {
-  static RouteView path = ('/destination-detail', (_) => DestinationDetailPage());
+  static RouteView path = (
+    '/destination-detail',
+    (_) => DestinationDetailPage(),
+  );
 
-  const DestinationDetailPage({super.key}) : super(child: _DestinationDetailPageState());
+  DestinationDetailPage({super.key})
+    : super(child: () => _DestinationDetailPageState());
 }
 
-class _DestinationDetailPageState extends NyState<DestinationDetailPage> {
+class _DestinationDetailPageState extends NyPage<DestinationDetailPage> {
   Destination? _destination;
 
   @override
@@ -24,9 +28,7 @@ class _DestinationDetailPageState extends NyState<DestinationDetailPage> {
   @override
   Widget build(BuildContext context) {
     if (_destination == null) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     final dest = _destination!;
@@ -34,18 +36,42 @@ class _DestinationDetailPageState extends NyState<DestinationDetailPage> {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          // ─── TODO C1 ────────────────────────────────────────────────────
-          // Build a SliverAppBar with:
-          //   - expandedHeight: 300
-          //   - pinned: true
-          //   - A back button (leading: BackButton in white)
-          //   - FlexibleSpaceBar with:
-          //       title: Text(dest.name) in white, fontSize 20
-          //       background: CachedNetworkImage of dest.imageUrl, BoxFit.cover
-          //         with a dark gradient overlay at the bottom
-          // ────────────────────────────────────────────────────────────────
-          // TODO C1: Replace this placeholder
-          const SliverToBoxAdapter(child: SizedBox(height: 300, child: Placeholder())),
+          SliverAppBar(
+            expandedHeight: 300,
+            pinned: true,
+            leading: const BackButton(color: Colors.white),
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(
+                dest.name,
+                style: const TextStyle(color: Colors.white, fontSize: 20),
+              ),
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  CachedNetworkImage(
+                    imageUrl: dest.imageUrl,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) =>
+                        Container(color: Colors.grey[300]),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.broken_image),
+                  ),
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withOpacity(0.6),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
 
           SliverToBoxAdapter(
             child: Padding(
@@ -53,49 +79,93 @@ class _DestinationDetailPageState extends NyState<DestinationDetailPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // ─── TODO C2 ──────────────────────────────────────────
-                  // Row with:
-                  //   Left: Column with dest.name (bold, 24) and
-                  //         Row(icon + dest.country) in grey
-                  //   Right (Spacer then): Column with
-                  //         RatingBarIndicator (rating: dest.rating, size 18)
-                  //         Text('${dest.rating}/5.0', fontSize 12, grey)
-                  // ─────────────────────────────────────────────────────
-                  // TODO C2: your code here
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            dest.name,
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.location_on,
+                                size: 14,
+                                color: Colors.grey,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                dest.country,
+                                style: TextStyle(color: Colors.grey[600]),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const Spacer(),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          RatingBarIndicator(
+                            rating: dest.rating,
+                            itemBuilder: (context, _) =>
+                                const Icon(Icons.star, color: Colors.amber),
+                            itemCount: 5,
+                            itemSize: 18,
+                          ),
+                          Text(
+                            '${dest.rating}/5.0',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 20),
 
                   // Category badge (complete)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.deepPurple.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
                       dest.category,
-                      style: const TextStyle(color: Colors.deepPurple, fontSize: 13),
+                      style: const TextStyle(
+                        color: Colors.deepPurple,
+                        fontSize: 13,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 20),
 
-                  // ─── TODO C3 ──────────────────────────────────────────
-                  // Section title 'About' (bold, 18)
-                  // Below it: Text(dest.description)
-                  //   Style: fontSize 15, height 1.6, color grey[700]
-                  // ─────────────────────────────────────────────────────
-                  // TODO C3: your code here
+                  // TODO C1: Show the 'About' section title and description
+                  // 1. const Text('About', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))
+                  // 2. const SizedBox(height: 8)
+                  // 3. Text(dest.description, style: TextStyle(fontSize: 15, color: Colors.grey[700], height: 1.6))
                   const SizedBox(height: 28),
 
-                  // ─── TODO C4 ──────────────────────────────────────────
-                  // An ElevatedButton.icon with:
-                  //   icon: Icons.bookmark_add_outlined
-                  //   label: 'Save to Wishlist'
-                  //   onPressed: show a SnackBar:
-                  //     '${dest.name} added to your wishlist!'
-                  //   Style: full width (minimumSize: Size(double.infinity, 52))
-                  //   backgroundColor: Colors.deepPurple
-                  // ─────────────────────────────────────────────────────
-                  // TODO C4: your code here
+                  // TODO C2: Add a full-width 'Save to Wishlist' button
+                  // ElevatedButton.icon(
+                  //   icon: const Icon(Icons.bookmark_add_outlined),
+                  //   label: const Text('Save to Wishlist'),
+                  //   style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 52), backgroundColor: Colors.deepPurple),
+                  //   onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                  //     SnackBar(content: Text('${dest.name} added to your wishlist!'))))
                   const SizedBox(height: 40),
                 ],
               ),
