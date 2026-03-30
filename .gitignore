@@ -120,3 +120,6 @@ app.*.symbols
 
 # VSCode
 .vscode/
+# Environment files
+.env
+lib/bootstrap/env.g.dart
